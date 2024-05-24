@@ -14,7 +14,7 @@ This lib is copied from (https://github.com/flitbit/diff , version 0.3.8) and mo
 ## Installation
 
 ```
-npm install deep-diff
+npm install @shoutem/deep-diff
 ```
 
 ## Tests
@@ -46,7 +46,7 @@ var deep = require("@shoutem/deep-diff");
 In order to describe differences, change revolves around an `origin` object. For consistency, the `origin` object is always the operand on the `left-hand-side` of operations. The `comparand`, which may contain changes, is always on the `right-hand-side` of operations.
 
 ```javascript
-var diff = require("deep-diff").diff;
+var diff = require("@shoutem/deep-diff").diff;
 
 var lhs = {
   name: "my object",
@@ -72,33 +72,6 @@ var differences = diff(lhs, rhs);
 ```
 
 The code snippet above would result in the following structure describing the differences:
-
-```javascript
-// Versions < 0.2.0
-[
-  { kind: "E", path: ["name"], lhs: "my object", rhs: "updated object" },
-  {
-    kind: "A",
-    path: ["details", "with"],
-    index: 2,
-    item: { kind: "E", path: [], lhs: "elements", rhs: "more" },
-  },
-  {
-    kind: "A",
-    path: ["details", "with"],
-    index: 3,
-    item: { kind: "N", rhs: "elements" },
-  },
-  {
-    kind: "A",
-    path: ["details", "with"],
-    index: 4,
-    item: { kind: "N", rhs: { than: "before" } },
-  },
-];
-```
-
-_v 0.2.0 and above_ The code snippet above would result in the following structure describing the differences:
 
 ```javascript
 [
