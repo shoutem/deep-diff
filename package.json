@@ -11,8 +11,7 @@
   ],
   "author": "Shoutem",
   "files": [
-    "index.js",
-    "index.es.js"
+    "index.js"
   ],
   "repository": {
     "type": "git",
