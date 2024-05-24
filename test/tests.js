@@ -607,19 +607,22 @@ describe('deep-diff', function() {
 
     describe('diff descriptors', function() {
         var status = '@@status';
-        var lhs = {};
-        
-
-        Object.defineProperty(lhs, status, {
-            value: { busyStatus: 'busy' },
-            enumerable: false,
-            writable: true,
-        });
+        var statuses = {
+            BUSY: 'busy',
+            IDLE: 'idle'
+        };
 
         it('should detect a difference with two busyStatus property values', function() {
+            var lhs = {};
             var rhs = {};
+        
+            Object.defineProperty(lhs, status, {
+                value: { busyStatus: statuses.BUSY },
+                enumerable: false,
+                writable: true,
+            });
             Object.defineProperty(rhs, status, {
-                value: { busyStatus: 'idle' },
+                value: { busyStatus: statuses.IDLE },
                 enumerable: false,
                 writable: true,
             });
@@ -631,16 +634,23 @@ describe('deep-diff', function() {
             expect(diff[0].kind).to.be('E');
             expect(diff[0].path).to.be.an('array');
             expect(diff[0].path).to.have.length(2);
-            expect(diff[0].path[0]).to.be('@@status');
+            expect(diff[0].path[0]).to.be(status);
             expect(diff[0].path[1]).to.be('busyStatus');
-            expect(diff[0].lhs).to.be('busy');
-            expect(diff[0].rhs).to.be('idle');
+            expect(diff[0].lhs).to.be(statuses.BUSY);
+            expect(diff[0].rhs).to.be(statuses.IDLE);
         });
 
         it('should not detect a difference with two busyStatus property values', function() {
+            var lhs = {};
             var rhs = {};
+        
+            Object.defineProperty(lhs, status, {
+                value: { busyStatus: statuses.BUSY },
+                enumerable: false,
+                writable: true,
+            });
             Object.defineProperty(rhs, status, {
-                value: { busyStatus: 'busy' },
+                value: { busyStatus: statuses.BUSY },
                 enumerable: false,
                 writable: true,
             });
@@ -649,27 +659,66 @@ describe('deep-diff', function() {
             expect(diff).to.be(undefined);
         });
 
-        it('apply descriptors changes to an empty object', function() {
+        it('ignore writable false descriptors', function() {
+            var lhs = {};
             var rhs = {};
+        
+            Object.defineProperty(lhs, status, {
+                value: { busyStatus: statuses.BUSY },
+                enumerable: false,
+                writable: false,
+            });
             Object.defineProperty(rhs, status, {
-                value: { busyStatus: 'idle' },
+                value: { busyStatus: statuses.IDLE },
+                enumerable: false,
+                writable: false,
+            });
+
+            var diff = deep.diff(lhs, rhs);
+            expect(diff).to.be(undefined);
+        });
+
+        it('ignore descriptors if both compared sides dont have them', function() {
+            var lhs = {};
+            var rhs = {};
+        
+            Object.defineProperty(rhs, status, {
+                value: { busyStatus: statuses.IDLE },
+                enumerable: false,
+                writable: false,
+            });
+
+            var diff = deep.diff(lhs, rhs);
+            expect(diff).to.be(undefined);
+        });
+
+        it('apply descriptors changes to an lhs', function() {            
+            var lhs = {};
+            var rhs = {};
+        
+            Object.defineProperty(lhs, status, {
+                value: { busyStatus: statuses.BUSY },
+                enumerable: false,
+                writable: true,
+            });
+            Object.defineProperty(rhs, status, {
+                value: { busyStatus: statuses.IDLE },
                 enumerable: false,
                 writable: true,
             });
 
-            var result = {};
             var diff = deep.diff(lhs, rhs);
-            deep.applyChange(result, lhs, diff[0]);
+            deep.applyChange(lhs, lhs, diff[0]);
 
-            var resultDescriptors = Object.getOwnPropertyDescriptors(result);
-            var resultDescriptorKeys = Object.keys(resultDescriptors);
-            var resultDescriptor = resultDescriptors[resultDescriptorKeys[0]];
+            var lhsDescriptors = Object.getOwnPropertyDescriptors(lhs);
+            var lhsDescriptorKeys = Object.keys(lhsDescriptors);
+            var lhsDescriptor = lhsDescriptors[lhsDescriptorKeys[0]];
 
-            expect(resultDescriptorKeys).to.be.an('array');
-            expect(resultDescriptorKeys).to.have.length(1);
-            expect(resultDescriptor.writable, 'writable').to.eql(true);
-            expect(resultDescriptor.enumerable, 'enumerable').to.eql(false);
-            expect(resultDescriptor.configurable, 'configurable').to.eql(false);
+            expect(lhsDescriptorKeys).to.be.an('array');
+            expect(lhsDescriptorKeys).to.have.length(1);
+            expect(lhsDescriptor.writable, 'writable').to.eql(true);
+            expect(lhsDescriptor.enumerable, 'enumerable').to.eql(false);
+            expect(lhsDescriptor.configurable, 'configurable').to.eql(false);
         });
     });
 });

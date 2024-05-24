@@ -123,26 +123,40 @@ function realTypeOf(subject) {
 }
 
 function deepDescriptors(lhs, rhs, changes, prefilter, path, stack) {
+  if (!lhs || !rhs) {
+    return;
+  }
+
   var lhsDescriptors = Object.getOwnPropertyDescriptors(lhs);
   var rhsDescriptors = Object.getOwnPropertyDescriptors(rhs);
 
   var rhsDescriptorKeys = Object.keys(rhsDescriptors);
   rhsDescriptorKeys.forEach(function(dk) {
+    // ignore length descriptor
     if (dk === 'length') {
       return;
     }
 
+    var lhsDescriptor = lhsDescriptors[dk];
     var rhsDescriptor = rhsDescriptors[dk];
 
-    if (
-      rhsDescriptor &&
-      rhsDescriptor.writable === true &&
-      rhsDescriptor.enumerable === false &&
-      rhsDescriptor.configurable === false
-    ) {
-      var lhsDescriptor = lhsDescriptors[dk];
-      deepDiff(lhsDescriptor.value, rhsDescriptor.value, changes, prefilter, path, dk, stack);
+    if (!lhsDescriptor || !rhsDescriptor) {
+      return;
     }
+
+    if (lhsDescriptor.writable !== true || rhsDescriptor.writable !== true) {
+      return;
+    }
+
+    if (lhsDescriptor.enumerable !== false || rhsDescriptor.enumerable !== false) {
+      return;
+    }
+
+    if (lhsDescriptor.configurable !== false || rhsDescriptor.configurable !== false) {
+      return;
+    }
+
+    deepDiff(lhsDescriptor.value, rhsDescriptor.value, changes, prefilter, path, dk, stack);
   });
 }
 
