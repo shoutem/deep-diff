@@ -150,7 +150,7 @@ observableDiff(lhs, rhs, function (d) {
 
 ## API Documentation
 
-A standard import of `var diff = require('deep-diff')` is assumed in all of the code examples. The import results in an object having the following public properties:
+A standard import of `var diff = require('@shoutem/deep-diff')` is assumed in all of the code examples. The import results in an object having the following public properties:
 
 - `diff(lhs, rhs, prefilter, acc)` &mdash; calculates the differences between two objects, optionally prefiltering elements for comparison, and optionally using the specified accumulator.
 - `observableDiff(lhs, rhs, observer, prefilter)` &mdash; calculates the differences between two objects and reports each to an observer function, optionally, prefiltering elements for comparison.
