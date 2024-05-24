@@ -199,3 +199,7 @@ The `diff` function calculates the difference between two objects.
 #### Pre-filtering Object Properties
 
 The `prefilter`'s signature should be `function(path, key)` and it should return a truthy value for any `path`-`key` combination that should be filtered. If filtered, the difference analysis does no further analysis of on the identified object-property path.
+
+## License
+
+This library is released under the [MIT License](./LICENSE).

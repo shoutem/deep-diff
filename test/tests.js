@@ -601,11 +601,75 @@ describe('deep-diff', function() {
 
         it('should not detect a difference with two undefined property values', function() {
             var diff = deep.diff(lhs, rhs);
-
             expect(diff).to.be(undefined);
-
         });
     });
 
+    describe('diff descriptors', function() {
+        var status = '@@status';
+        var lhs = {};
+        
 
+        Object.defineProperty(lhs, status, {
+            value: { busyStatus: 'busy' },
+            enumerable: false,
+            writable: true,
+        });
+
+        it('should detect a difference with two busyStatus property values', function() {
+            var rhs = {};
+            Object.defineProperty(rhs, status, {
+                value: { busyStatus: 'idle' },
+                enumerable: false,
+                writable: true,
+            });
+
+            var diff = deep.diff(lhs, rhs);
+            
+            expect(diff).to.be.an(Array);
+            expect(diff.length).to.be(1);
+            expect(diff[0].kind).to.be('E');
+            expect(diff[0].path).to.be.an('array');
+            expect(diff[0].path).to.have.length(2);
+            expect(diff[0].path[0]).to.be('@@status');
+            expect(diff[0].path[1]).to.be('busyStatus');
+            expect(diff[0].lhs).to.be('busy');
+            expect(diff[0].rhs).to.be('idle');
+        });
+
+        it('should not detect a difference with two busyStatus property values', function() {
+            var rhs = {};
+            Object.defineProperty(rhs, status, {
+                value: { busyStatus: 'busy' },
+                enumerable: false,
+                writable: true,
+            });
+
+            var diff = deep.diff(lhs, rhs);
+            expect(diff).to.be(undefined);
+        });
+
+        it('apply descriptors changes to an empty object', function() {
+            var rhs = {};
+            Object.defineProperty(rhs, status, {
+                value: { busyStatus: 'idle' },
+                enumerable: false,
+                writable: true,
+            });
+
+            var result = {};
+            var diff = deep.diff(lhs, rhs);
+            deep.applyChange(result, lhs, diff[0]);
+
+            var resultDescriptors = Object.getOwnPropertyDescriptors(result);
+            var resultDescriptorKeys = Object.keys(resultDescriptors);
+            var resultDescriptor = resultDescriptors[resultDescriptorKeys[0]];
+
+            expect(resultDescriptorKeys).to.be.an('array');
+            expect(resultDescriptorKeys).to.have.length(1);
+            expect(resultDescriptor.writable, 'writable').to.eql(true);
+            expect(resultDescriptor.enumerable, 'enumerable').to.eql(false);
+            expect(resultDescriptor.configurable, 'configurable').to.eql(false);
+        });
+    });
 });
