@@ -1,0 +1,43 @@
+{
+  "name": "@shoutem/deep-diff",
+  "description": "Javascript utility for calculating deep difference, capturing changes, and applying changes across objects; for nodejs and the browser.",
+  "version": "1.0.0",
+  "license": "MIT",
+  "keywords": [
+    "diff",
+    "difference",
+    "compare",
+    "change-tracking"
+  ],
+  "author": "Shoutem",
+  "files": [
+    "index.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/shoutem/deep-diff"
+  },
+  "main": "./index.js",
+  "module": "./index.es.js",
+  "jsnext:main": "/index.es.js",
+  "directories": {
+    "test": "./test"
+  },
+  "devDependencies": {
+    "deep-equal": "1.0.1",
+    "expect.js": "0.3.1",
+    "jscs": "1.13.1",
+    "jshint": "2.13.6",
+    "mocha": "2.5.3",
+    "rollup": "0.41.6"
+  },
+  "scripts": {
+    "lint": "jscs index.es.js test/ -e && jshint index.es.js test/",
+    "build": "rollup index.es.js -f umd -o index.js -n DeepDiff",
+    "test": "mocha test/",
+    "prebuild": "npm run lint",
+    "pretest": "npm run build",
+    "release": "npm run build && npm publish --access public --tag latest",
+    "release-rc": "npm run build && npm publish --access public --tag rc"
+  }
+}
